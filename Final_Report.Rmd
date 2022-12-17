@@ -2,7 +2,7 @@
 title: 'STAT 316 Final Report: What Makes Countries Happy?'
 author: Maureen Wainwright^[St. Olaf College, wainwr1@stolaf.edu], Andrew Noecker^[St.
   Olaf College, noecke2@stolaf.edu]
-date: "`r format(Sys.time(), '%B %d, %Y')`"
+date: "December 19, 2022"
 output:
   html_document:
     theme: cerulean
@@ -14,7 +14,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(ggcorrplot)
 library(gridExtra)
@@ -45,30 +45,32 @@ final_data <- full_data %>%
 
 ## Introduction
 
-Understanding what makes individuals happy and what is necessary for increased levels of happiness have been topics of scientific inquiry by economists, sociologists, and psychologists for many years. The complex definition of happiness and its intricate connections to wealth and status make these questions difficult to answer. A number of numeric measurements have been proposed to quantify the average levels of happiness among individuals in their respective countries. While these scales come far from capturing all of the intricacies that influence the happiness of a single person, they can offer unique insights into certain features of government and country-level characteristics which may be associated with the average happiness of a given population. 
+Understanding what makes individuals happy and what is necessary for increased levels of happiness have been topics of scientific inquiry by economists, sociologists, and psychologists for many years (Lang 2012). The complex definition of happiness and its intricate connections to wealth and status make these questions difficult to answer. A number of numeric measurements have been proposed to quantify the average levels of happiness among individuals in their respective countries (Lang 2012). While these scales come far from capturing all of the intricacies that influence the happiness of a single person, they can offer unique insights into certain features of government and country-level characteristics which may be associated with the average happiness of a given population. 
+
 
 This research project will explore country-level characteristics, such as health care expenditures, life expectancies, and access to clean water, and the ways in which these features contribute to a “happiness score” for countries. In order to assess the relative importance or lack thereof of our variables of interest in determining country-level happiness, we needed to utilize one of the many quantified happiness scales. We selected the happiness scores published by the World Happiness Report. These scores were compiled for 155 countries and used data from the Gallup World Poll, specifically the question known as the Cantril ladder. This question asks respondents to imagine a ladder in which their best possible life is equivalent to a score of 10 and their worst possible life a score of 0. Then they must rate their own lives on that scale. The advantages of using a happiness score derived from the Gallup World Poll include the assurance of a representative sample population for the survey as well as Gallup’s use of weights to account for instances where sample populations may not have been fully representative.
 
 ## Methods
 
-Data were gathered from two main sources: a Kaggle dataset that compiled world happiness scores from 2015 to 2019, and the World Bank that provided individual datasets on the explanatory variables of interest for countries around the world. Both of these sources provided easy links to download the data files. To combine the data, the explanatory variables were joined together based on country and year, and that process was then repeated to join the data with happiness scores. To ensure no issues arose with differing country names when joining the  data, universal 3 letter country codes were used. 
+Data were gathered from two main sources: a Kaggle dataset that compiled world happiness scores from 2015 to 2019, and the World Bank that provided individual datasets on the explanatory variables of interest for countries around the world. Data on one variable of interest, beer consumption, was gathered from Our World in Data. These sources provided easy links to download the data files. To combine the data, the explanatory variables were joined together based on country and year, and that process was then repeated to join the data with happiness scores. To ensure no issues arose with differing country names when joining the  data, universal three letter country codes were used. 
 
 
-After compiling the initial data, there were 810 observations. However, observations from 9 countries were removed due to missing data from one or more variables of interest. Data from an additional 5 countries with less than 3 years of happiness scores were dropped along with observations missing values for any of our variables of interest. The final dataset contained 591 observations from a total of 121 countries. Lastly, the year variable was centered around 2015, life expectancy was centered around 73, and GDP was centered around 0.925. This was done to speed up the modeling process and increase interpretability. Variables of interest included life expectancy, internet usage, GDP, and more. The full list of variables can be found in the appendix.
+After compiling the initial data, there were 810 observations. However, observations from 9 countries were removed due to missing data from one or more variables of interest. Data from an additional five countries with less than three years of reported happiness scores were dropped along with observations with missing values for any of our variables of interest. The final dataset contained 591 observations from a total of 121 countries. Lastly, the year variable was centered around 2015, life expectancy was centered around 73, and GDP was centered around 0.925. This was done to speed up the modeling process and increase interpretability. Variables of interest included life expectancy, internet usage, GDP, and more. The full list of variables can be found in the appendix. 
 
 
-Before the modeling process, a correlation matrix was produced to examine which variables might be most relevant. A similar correlation matrix was created after calculating the average value for each variable for each country over the 5 years of focus. Summary statistics and histograms for all variables were produced to ensure no other transformations of the data were needed. A multilevel longitudinal model was chosen to model our data. In this instance, year is our level 1 unit, and country is our level 2 observational unit. In this way, we account for the correlation between observations that come from the same country in different years. This correlation was quantified by first creating an unconditional means model and calculating the intra-correlation coefficient. 
+Before the modeling process, a correlation matrix was produced to examine which variables might be most relevant. A similar correlation matrix was created after calculating the average value for each variable for each country over the five years of interest. Summary statistics and histograms for all variables were produced to ensure no other transformations of the data were needed. A multilevel longitudinal model was chosen to model our data. In this instance, year is our level one unit, and country is our level two observational unit. In this way, we account for the correlation between observations that come from the same country in different years. This correlation was quantified by creating an unconditional means model and calculating the intra-correlation coefficient. All modeling was done using the lme4 package in R. 
 
 
-Next, we created an unconditional growth model which only included the variable year and a random slope term on year. Following this step, we created a series of eleven different models looking at different combinations of variables, comparing models and potential interaction terms using drop in deviance tests. Ultimately, Model 8 was our best performing model, as determined by coefficient significance and comparisons to other models built.  ADD FULL MODEL NOTATION
+Next, we created an unconditional growth model which only included the variable year and a random slope term on year. Following this step, we created a series of eleven different models looking at different combinations of variables. Models were then compared and potential interaction terms were considered using drop in deviance tests. Ultimately, Model 8 was our best performing model, as determined by coefficient significance and comparisons to other models built.  
+
 
 
 ## Results
 
-Prior to running any models, the distribution of our variables were examined. They are summarized in Table 1, with the mean and standard deviation across each year. We see that the average happiness score is 5.43, with 2017 having the highest average happiness score and 2016 having the lowest. Most variables remain constant over the 5 years, though we see a clear increase in internet usage (average of 49 in 2015, average of 61 in 2019). The distribution of happiness score by country can be seen in Figure 1. The countries with the 5 highest average happiness scores and 5 lowest happiness scores can be seen in Figure 2. We see that the 5 happiest countries are all European, with Denmark and Norway topping the list. Conversely, African countries such as Burundi and Rwanda are the least happy. Lastly, Figure 3 displays a correlation matrix between all variables, where the left panel contains data with each year representing one row, while the right panel represents correlations calculated between the mean of each country. On a country level, we see high correlation between happiness and internet usage (0.81), happiness and life expectancy (0.79), and happiness and GDP per capita (0.83). 
+Prior to running any models, the distribution of our variables was examined. These are summarized in Table 1, with the mean and standard deviation across each year. We see that the average happiness score is 5.43, with 2017 having the highest average happiness score and 2016 having the lowest. Most variables remain constant over the 5 years, though we see a clear increase in internet usage (average of 49 in 2015, average of 61 in 2019). The distribution of happiness score by country can be seen in Figure 1. The countries with the 5 highest average happiness scores and 5 lowest happiness scores are shown in Figure 2. We see that the 5 happiest countries are all European, with Denmark and Norway topping the list. Conversely, African countries such as Burundi and Rwanda are the least happy. Lastly, Figure 3 displays a correlation matrix between all variables, where the left panel contains data with each year representing one row, while the right panel represents correlations calculated between the mean of each country. On a country level, we see high correlation between happiness and internet usage (0.81), happiness and life expectancy (0.79), and happiness and GDP per capita (0.83). 
 
 
-```{r Summary Table, echo = FALSE, fig.width = 6}
+```{r Summary Table, echo = FALSE, fig.width = 4}
 nice_names <- c("Happiness Score",
                 "Year",
                 "Life Expectancy (years)",
@@ -92,7 +94,7 @@ gtsummary::tbl_summary(gt_test,
                        statistic = everything() ~ "{mean} ({sd})") %>%
   add_overall(last = T) %>%
   as_gt() %>%
-  tab_header(title = md("Summary of Variables by **Year** (2015-2019)")) %>%
+  tab_header(title = md("**Table 1**: Summary of Variables by Year (2015-2019)")) %>%
   tab_options(table.width = pct(95)) %>%
   cols_width(everything() ~ px(50))
   
@@ -104,7 +106,7 @@ gtsummary::tbl_summary(gt_test,
   # )
 ```
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE}
+```{r Fig 1, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 5, fig.width = 6.5}
 final_data %>%
   ggplot(aes(x = year, y = happiness_score)) + 
   geom_smooth(se = F) + 
@@ -126,7 +128,7 @@ final_data %>%
 
 
 
-```{r, echo = FALSE}
+```{r Fig 2, echo = FALSE, fig.height = 5, fig.width = 6.5}
 final_data %>%
   group_by(country) %>%
   summarize(avg_happiness = mean(happiness_score)) %>%
@@ -137,7 +139,7 @@ final_data %>%
   labs(x = "",
        y = "Average Happiness Score, 2015-2019",
        title = "Figure 2: The World's Happiest and Unhappiest Countries",
-       caption = "Data courtesy The World Bank & Our World in Data\nIceland & Yemen not included in the final dataset due to missing values") +
+       caption = "Data courtesy of Kaggle via World Happiness Report\nIceland & Yemen not included in the final dataset due to missing values") +
   coord_flip() + 
   theme_bw() + 
   theme(panel.grid.minor = element_blank(),
@@ -207,7 +209,7 @@ country_corr <- ggcorrplot(round_country_M,
 ```
 
 
-```{r, echo = FALSE, fig.height = 6, fig.height = 6}
+```{r Fig 3, echo = FALSE, fig.height = 6}
 # grid.arrange(year_corr, country_corr, nrow = 1)
 
 country_corr
@@ -229,44 +231,12 @@ Level 2: $$ a_i = \alpha_0 + u_i \\
 Composite: $$Y_{ij} = \alpha_0 + \beta_0CYear_{ij} + \delta_0GDP_{ij} + \gamma_0LifeExp_{ij} + \theta_0Internet_{ij} + \lambda_0Beer_{ij} + \epsilon_{ij} + u_i + v_iCYear_{ij}$$
 
 
-The final model included the centered versions of year, life expectancy, GDP per capita, as well as internet usage and liters of beer consumed per person. All of these variables returned significant t-values, with the highest t-value for life expectancy (5.853) and the lowest t-value for year (-3.192). There were six fixed effects and four random effects in the model for a total of ten model parameters. 
+The final model included the centered versions of year, life expectancy, GDP per capita, as well as internet usage and liters of beer consumed per person. All of these variables returned significant t-values, with the highest t-value for life expectancy (5.853) and the lowest t-value for year (-3.192). There were six fixed effects and four random effects in the model for a total of ten model parameters. All model coefficients and t-values can be found in Tables 2 and 3. 
+
+The variables GDP, life expectancy, internet usage, and beer consumption all had a positive association with happiness score. This means that as any one of these measures increased, happiness score also increased (holding all else constant). For example, in 2015, a country with a life expectancy of 73 years will have, on average, a 0.407 point increase in happiness score for each dollar increase in GDP per capita, holding all else constant. Year was the only variable with a negative association with happiness score. As the year increased from 2015 onward, the expected mean happiness score decreased by 0.032 points when holding all other variables constant.
 
 
-#### *Fixed Effects*
-
-
-$\alpha_0$ = 4.964007. The estimated mean happiness score in the year 2015 for a country with a life expectancy of 73 years, a gdp per capita of 0.925, 0% internet usage, and 0 litres of beer consumed per person is 4.96.
-
-$\beta_0$ = -0.031738. For a country with a life expectancy of 73 years, a gdp per capita of 0.93, 0% internet usage, and 0 litres of beer consumed per person, as year increases from 2015, the expected mean happiness score will decrease by 0.032.
-
-$\delta_0$ = 0.406507. In 2015, a country with a life expectancy of 73 years will have, on average, a 0.407 point increase in happiness score for each dollar increase in gdp per capita, holding all else constant.
-
-$\gamma_0$ = 0.065876. In 2015, a country with a gdp per capita of \$0.93, would have an estimated mean increase in happiness score of 0.067 points for every additional year of life expectancy, holding all else constant.
-
-$\theta_0$ = 0.006508. In 2015, a country with a life expectancy of 73 years and a gdp per capita of \$0.93, is expected to have an estimated mean increase in happiness score of 0.0065 for every additional 1% of individuals in the population using internet, when holding all else constant.
-
-$\lambda_0$ = 0.081364. In 2015, a country with a life expectancy of 73 years and a gdp per capita of \$0.93 is expected to have a mean increase in happiness score of 0.081 points for every additional liter of beer consumed per person, holding all else constant.
-
-#### *Random Effects*
-
-
-
-$\sigma^2$ = 0.05402. The estimated variance in residuals for the individual country happiness scores is 0.054.
-
-$\sigma_u^2$ = 0.3607 The estimated variance of happiness scores in 2015 is 0.361.
-
-$\sigma_v^2$ = 0.000006207. The estimated variance of yearly changes in happiness scores during the five year observation period is 0.00000621.
-
-$\rho_{uv}$ = 1.00. The estimated correlation between 2015 happiness scores and yearly changes in happiness scores is 1.00.
-
-
-
-```{r}
-test_tbl <- tibble(name = c("x", "y", "z"),
-                   estimate = c(-0.52, 4.76, -3.21),
-                   t_val = c(2.3, 1.3, -2.4))
-
-
+```{r Fixed Effect Tibble, echo = FALSE}
 
 model8_fixed <- tibble(name = c("Intercept", "Internet Usage", "GDP Per Capita", "Life Expectancy", "Year", "Beer Consumption"),
                        estimate = c(-0.225755, 0.006508, 0.406507, 0.065876, -0.031738, 0.081364),
@@ -280,8 +250,10 @@ model8_fixed %>%
   gt() %>%
   cols_label(.list = cols_list) %>%
   tab_header(
-    title = md("**Fixed Effects for Final Model**")
+    title = md("**Table 2:** Fixed Effects for Final Model")
   ) %>%
+  fmt_number(columns = 2:3,
+             n_sigfig = 4) %>%
   tab_footnote(
     footnote = "Centered Variables",
     locations = cells_body(
@@ -294,17 +266,46 @@ model8_fixed %>%
 ```
 
 
+```{r Random Effect Tibble, echo = FALSE}
+
+model8_random <- tibble(name = c("Intercept", "Year", "Residual"),
+                       Variance = c(0.3607, 0.0000062076, 0.05402))
+
+cols_list_random <- list(name = md("**Coefficient Name**"),
+                  Variance = md("**Variance**"))
+
+model8_random %>%
+  gt() %>%
+  cols_label(.list = cols_list_random) %>%
+  tab_header(
+    title = md("**Table 3:** Random Effects for Final Model")
+  ) %>%
+  fmt_number(columns = Variance,
+             n_sigfig = 4,
+             ) %>%
+  tab_footnote(
+    footnote = "Centered Variables",
+    locations = cells_body(
+      columns = name,
+      rows = name %in% c("Year")
+    )
+  ) %>%
+  opt_footnote_marks(marks = c("*", "+"))
+
+```
+
 
 ## Discussion
 
 
-Our final model found that the variables year, life expectancy, GDP per capita, internet usage, and beer consumption were all significant predictors of a country’s happiness score. The most interesting result from this conclusion is that the variable for basic access to clean water was not significant in predicting happiness score. Since access to water is a necessity for life, this was a surprising result. Additionally, the significance of beer consumption seemed odd, as more alcohol consumption can often lead to negative health effects. Similarly, the absence of health expenditures as a significant variable was also notable. It seems as though countries which spend more on their healthcare systems would have better healthcare, healthier populations, and therefore happier people. However, in the case of our model, this variable was not significant. The importance of internet usage in predicting happiness score in the model is relevant to the growing prevalence of technology in every facet of life. Access to the internet is almost essential for everything, and it makes sense that internet use is a significant predictor of happiness in this regard. However, it is also interesting to consider research done on the detrimental effects of technology, particularly smartphones, which are heavily reliant on the internet. Conflicting results like these may suggest that the happiness score done by the The World Happiness report may not be a completely accurate measure of happiness. Although, it is important to remember that happiness is a difficult concept to quantify, and so disparities in results are likely to occur. 
+Our final model found that the variables year, life expectancy, GDP per capita, internet usage, and beer consumption were all significant predictors of a country’s happiness score. One of the most interesting results from this conclusion is that the variable for basic access to clean water was not significant in predicting happiness score. Since access to water is a necessity for life, this was a surprising result. Additionally, the significance of beer consumption seemed odd, as more alcohol consumption can often lead to negative health effects. Similarly, the absence of health expenditures as a significant variable was also notable. It seems as though countries which spend more on their healthcare systems would have better healthcare, healthier populations, and therefore happier people. However, in the case of our model, this variable was not significant. The importance of internet usage in predicting happiness score in the model is relevant to the growing prevalence of technology in every facet of life. Access to the internet is almost essential for everything, and it makes sense that internet use is a significant predictor of happiness in this regard. However, it is also interesting to consider research done on the detrimental effects of technology, particularly smartphones, which are heavily reliant on the internet. Conflicting results like these may suggest that the happiness score calculated by the The World Happiness report may not be a completely accurate measure of happiness. Although, it is important to remember that happiness is a difficult concept to quantify, and so disparities in results are likely to occur. 
 
 
-The implications of our results must be framed in light of the complexity of quantifying a concept like happiness. Our research and analysis was primarily exploratory, and therefore, these results can function primarily as a starting point for future research questions and analyses. There were also significant limitations to our analysis. These included the happiness scale itself, which was based off of one question on a worldwide survey. Additionally, certain countries like Iceland, Iran, and Malaysia had to be removed from our analysis due to missing data points. Limiting a sample size is not ideal in statistical research and a more extensive study taking into account all countries over a longer period of time would most likely yield more conclusive results. These methodological limitations indicate that the conclusions from this research must be framed as areas of further exploration and research, rather than decisive statements of fact.
+The implications of our results must be framed in light of the complexity of quantifying a concept like happiness. Our research and analysis was primarily exploratory, and therefore, these results can function primarily as a starting point for future research questions and analyses. There were also significant limitations to our analysis. These included the happiness scale itself, which was based off of one question on a worldwide survey. Additionally, certain countries like Iceland, Iran, and Malaysia had to be removed from our analysis due to missing data points. Limiting a sample size is not ideal in statistical research and a more extensive study taking into account all countries over a longer period of time would most likely yield more conclusive results. These methodological limitations indicate that the conclusions from this research must be framed as areas of further exploration and research, rather than decisive statements of fact. Similarly, the results of this research can not be used to make causal claims. There was no controlled experiment involved and the results were primarily a starting point for further research. In terms of generalizability, this analysis cannot be used to support claims that one specific variable, for example, beer consumption, makes people in one country just as happy as people in another country. The data is collected on a global scale and due to a variety of differences in cultural values and traditions, the same variables are unlikely to relate to the happiness of a given country’s population in the same manner across all countries.
 	
+	
+Despite such limitations, the results from our analysis still offer interesting considerations for future research. The lack of significance in basic water, for example, instigates numerous research questions about the necessity of water as more people are losing access to clean water due to climate alterations.The introduction of new or different variables into the analysis could also yield varying results. Additionally, including country-level variables could also lead to new outcomes and conclusions. Despite all of the research conducted in a variety of academic disciplines in order to understand happiness, there is still much we do not understand. This research attempts to further the discussion on predictors of happiness at the country level as well as invite statistical analysis into the exploration of global happiness and its implications for the future.
 
-Despite such methodological limitations, the results from our analysis still offer interesting considerations for future research. The lack of significance in basic water, for example, instigates numerous research questions about the necessity of water as more people are losing access to clean water due to climate alterations.The introduction of new or different variables into the analysis could also yield varying results. Additionally, including country-level variables could also lead to new outcomes and conclusions. Despite all of the research done in a variety of academic disciplines in order to understand happiness, there is still much we do not understand. This research attempts to further the discussion of what matters for happiness at the country level as well as invite statistical analysis into the exploration of global happiness and its implications for the future.
 
 
 ## Appendix
@@ -337,4 +338,23 @@ Despite such methodological limitations, the results from our analysis still off
 | Open Defecation      | People practicing open defecation                   | \% of population          | [The World Bank](https://data.worldbank.org/indicator/SH.STA.ODFC.ZS)               |
 +----------------------+-----------------------------------------------------+---------------------------+-------------------------------------------------------------------------------------+
 
-: Description of Relevant Variables
+: Table 4: Description of Relevant Variables
+
+
+
+## Peer Review Response
+
+The major takeaways from our peer review involved recommendations to add in additional information in the discussion section, adjust plot formatting in the methods and results section, and to add informative captions to all of our plots throughout the paper. After reviewing these recommendations, we made sure to include statements concerning generalizability and causality in the discussion section and also added captions to our plots in the results section. One recommended change was to only have an abridged version of the table with variables by year within the paper and include the full table in the appendix. We decided to not follow this recommendation because the pdf version of our report that the peer reviewers looked at makes that table much larger than it actually appears to be in the online version. Since our final report will be submitted as a link, we felt that this was not a necessary change moving forward. The overall peer review process was helpful as it allowed us to have other students review our work and give us their feedback on what they thought needed improvement. The student feedback contributed to our drafting process because it informed our editing choices as we worked to make our rough draft into a final report.
+
+
+## Bibliography
+
+“Beer Consumption per Person.” n.d. Our World in Data. Accessed December 8, 2022.         https://ourworldindata.org/grapher/beer-consumption-per-person.
+
+“DataBank | The World Bank.” n.d. Accessed December 13, 2022. https://databank.worldbank.org/home.aspx.
+
+Lang, Julie. 2012. “The Most Influential Factors in Determining the Happiness of Nations,” 23.
+
+“World Happiness Report.” n.d. Accessed December 8, 2022. https://www.kaggle.com/datasets/unsdsn/world-happiness.
+
+
